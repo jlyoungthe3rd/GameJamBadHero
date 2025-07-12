@@ -375,6 +375,8 @@ MonoBehaviour:
   enemyLayers:
     serializedVersion: 2
     m_Bits: 64
+  blockDuration: 1
+  blockCooldown: 3
 --- !u!61 &497287104
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -493,7 +495,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0.95330596, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -621,9 +623,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.06269592
-    width: 0.3761387
-    height: 0.37617555
+    y: 0
+    width: 0.999902
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34

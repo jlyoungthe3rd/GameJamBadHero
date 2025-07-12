@@ -24,6 +24,13 @@ public class PlayerController : MonoBehaviour
     // Variable to store the current movement input
     private Vector2 currentMovementInput;
 
+    private bool isBlocking = false;
+    public float blockDuration = 1f; // How long the block lasts
+
+    public float blockCooldown = 3f; // Time before you can block again
+    private float timeSinceLastBlock = 0f;
+
+    private SpriteRenderer spriteRenderer;
     void Awake() // Use Awake for initial setup like input actions
     {
 
@@ -45,6 +52,12 @@ public class PlayerController : MonoBehaviour
 
         // Subscribe to the Attack Action
         playerInputActions.Player.Attack.performed += ctx => Attack();
+
+        // Subscribe to the Block action
+        playerInputActions.Player.Block.performed += ctx => TryBlock();
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
     }
 
     void OnEnable() // Enable input actions when the GameObject is active
@@ -72,10 +85,22 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(-1, 1, 1);
         }
+
+        // Increment block cooldown timer
+        timeSinceLastBlock += Time.deltaTime;
     }
 
     public void TakeDamage(int damage)
+
     {
+
+        if (isBlocking)
+        {
+            Debug.Log("Player blocked the attack!");
+            StartCoroutine(SuccessfulBlockFeedback()); // Start the flash feedback
+            return; // If blocking, don't take damage
+        }
+
         currentHealth -= damage;
         healthSlider.value = currentHealth;
 
@@ -113,7 +138,50 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private System.Collections.IEnumerator BlockCoroutine()
+    {
+        Debug.Log("Player started blocking!");
+        isBlocking = true;
 
+        // TODO: Add visual feedback for blocking here (e.g., change color, play animation)
+        spriteRenderer.color = Color.cyan; // Change color to cyan when block starts
+
+        // Wait for the duration of the block
+        yield return new WaitForSeconds(blockDuration);
+
+        // After the wait, the block is over
+        isBlocking = false;
+        spriteRenderer.color = Color.blue; // Change color back to normal
+        Debug.Log("Player stopped blocking!");
+
+        // TODO: Revert visual feedback here
+    }
+
+    private System.Collections.IEnumerator SuccessfulBlockFeedback()
+    {
+        spriteRenderer.color = Color.yellow; // Flash a bright color
+        yield return new WaitForSeconds(0.15f); // For a very short time
+
+        // If we are still in the main block duration, return to the cyan color.
+        if (isBlocking)
+        {
+            spriteRenderer.color = Color.cyan;
+        }
+    }
+    private void TryBlock()
+    {
+        // Check if the block is off cooldown
+        if (timeSinceLastBlock >= blockCooldown)
+        {
+            // Reset the timer and start the block coroutine
+            timeSinceLastBlock = 0f;
+            StartCoroutine(BlockCoroutine());
+        }
+        else
+        {
+            Debug.Log("Block is on cooldown!");
+        }
+    }
     // Basic ground check (keep this as is for now)
     void OnCollisionEnter2D(Collision2D collision)
     {
