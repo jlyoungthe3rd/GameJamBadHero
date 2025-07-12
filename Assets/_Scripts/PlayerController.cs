@@ -10,6 +10,11 @@ public class PlayerController : MonoBehaviour
 
     public Slider healthSlider; // A reference to the UI Slider
 
+    public Transform attackPoint;
+    public float attackRange = 0.5f;
+    public int attackDamage = 40;
+    public LayerMask enemyLayers;
+
     private Rigidbody2D rb;
     private bool isGrounded;
 
@@ -37,6 +42,9 @@ public class PlayerController : MonoBehaviour
 
         // Subscribe to the Jump action's performed event
         playerInputActions.Player.Jump.performed += ctx => Jump();
+
+        // Subscribe to the Attack Action
+        playerInputActions.Player.Attack.performed += ctx => Attack();
     }
 
     void OnEnable() // Enable input actions when the GameObject is active
@@ -87,6 +95,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Attack()
+    {
+        Debug.Log("Player Attacked!!");
+
+        // 1. Detect enemies in range of attack
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+        // 2. Damage all detected enemies
+        foreach (Collider2D enemyCollider in hitEnemies)
+        {
+            Enemy enemyComponent = enemyCollider.GetComponent<Enemy>();
+            if (enemyComponent != null)
+            {
+                enemyComponent.TakeDamage(attackDamage);
+            }
+        }
+    }
+
+
     // Basic ground check (keep this as is for now)
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -100,6 +127,15 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+
+        if (other.GetComponent<Hazard>() != null)
+        {
+            Hazard hazard = other.GetComponent<Hazard>();
+            TakeDamage(hazard.damage);
         }
     }
 }
