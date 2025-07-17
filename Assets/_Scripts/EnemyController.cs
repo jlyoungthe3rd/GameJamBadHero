@@ -1,14 +1,17 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
+    [Header("Stats")]
     public int health = 100;
+    public int attackDamage = 10;
 
+    [Header("Movement")]
     public float moveSpeed = 2f;
     public Rigidbody2D rb;
     public bool isFacingRight = true;
 
-    public Transform player;
+    [Header("Checks")]
     public Transform groundCheck;   // A point to check for the ground
     public Transform wallCheck;     // A point to check for a wall
     public LayerMask whatIsGround;  // Defines what layer is considered ground
@@ -16,8 +19,8 @@ public class Enemy : MonoBehaviour
     private bool isTouchingWall;
     private bool isAtEdge;
 
+    [Header("Attack")]
     public float attackRange = 1f;
-    public int attackDamage = 10;
     public float attackCooldown = 2f; // Time in seconds between attacks
     private float timeSinceLastAttack = 0f;
     public LayerMask playerLayer;
@@ -75,7 +78,7 @@ public class Enemy : MonoBehaviour
         transform.localScale = theScale;
     }
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         health -= damage;
 
@@ -88,7 +91,7 @@ public class Enemy : MonoBehaviour
 
     }
 
-    void Die()
+    protected virtual void Die()
     {
         Debug.Log("Enemy died!");
         Destroy(gameObject);

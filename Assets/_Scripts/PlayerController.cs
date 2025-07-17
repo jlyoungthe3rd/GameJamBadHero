@@ -130,10 +130,21 @@ public class PlayerController : MonoBehaviour
         // 2. Damage all detected enemies
         foreach (Collider2D enemyCollider in hitEnemies)
         {
-            Enemy enemyComponent = enemyCollider.GetComponent<Enemy>();
-            if (enemyComponent != null)
+            // First, check if the object we hit is a regular enemy
+            EnemyController enemy = enemyCollider.GetComponent<EnemyController>();
+            if (enemy != null)
             {
-                enemyComponent.TakeDamage(attackDamage);
+                // If it is, deal damage and move to the next hit object
+                enemy.TakeDamage(attackDamage);
+                continue;
+            }
+
+            // If it wasn't a regular enemy, check if it's the boss
+            VillainBossController boss = enemyCollider.GetComponent<VillainBossController>();
+            if (boss != null)
+            {
+                // If it is the boss, deal damage to it
+                boss.TakeDamage(attackDamage);
             }
         }
     }
