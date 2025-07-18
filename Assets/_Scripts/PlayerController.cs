@@ -122,31 +122,41 @@ public class PlayerController : MonoBehaviour
 
     private void Attack()
     {
-        Debug.Log("Player Attacked!!");
-
-        // 1. Detect enemies in range of attack
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-        // 2. Damage all detected enemies
-        foreach (Collider2D enemyCollider in hitEnemies)
+        if (isBlocking == false) // Only allow attack if not blocking
         {
-            // First, check if the object we hit is a regular enemy
-            EnemyController enemy = enemyCollider.GetComponent<EnemyController>();
-            if (enemy != null)
-            {
-                // If it is, deal damage and move to the next hit object
-                enemy.TakeDamage(attackDamage);
-                continue;
-            }
+            Debug.Log("Player Attacked!");
 
-            // If it wasn't a regular enemy, check if it's the boss
-            VillainBossController boss = enemyCollider.GetComponent<VillainBossController>();
-            if (boss != null)
+            // 1. Detect enemies in range of attack
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+            // 2. Damage all detected enemies
+            foreach (Collider2D enemyCollider in hitEnemies)
             {
-                // If it is the boss, deal damage to it
-                boss.TakeDamage(attackDamage);
+                // First, check if the object we hit is a regular enemy
+                EnemyController enemy = enemyCollider.GetComponent<EnemyController>();
+                if (enemy != null)
+                {
+                    // If it is, deal damage and move to the next hit object
+                    enemy.TakeDamage(attackDamage);
+                    continue;
+                }
+
+                // If it wasn't a regular enemy, check if it's the boss
+                VillainBossController boss = enemyCollider.GetComponent<VillainBossController>();
+                if (boss != null)
+                {
+                    // If it is the boss, deal damage to it
+                    boss.TakeDamage(attackDamage);
+                }
             }
         }
+        else
+        {
+            Debug.Log("Cannot attack while blocking!");
+            return; // Exit if trying to attack while blocking
+        }
+
+
     }
 
     private System.Collections.IEnumerator BlockCoroutine()
@@ -178,7 +188,11 @@ public class PlayerController : MonoBehaviour
         {
             spriteRenderer.color = Color.cyan;
         }
+
+        isBlocking = false; // Reset blocking state
+        Debug.Log("Player successfully blocked an attack!");
     }
+
     private void TryBlock()
     {
         // Check if the block is off cooldown

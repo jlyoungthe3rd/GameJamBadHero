@@ -25,14 +25,22 @@ public class EnemyController : MonoBehaviour
     private float timeSinceLastAttack = 0f;
     public LayerMask playerLayer;
 
-    void Start()
+    [Header("Player")]
+    public Transform player;
+
+    protected void Awake()
     {
         // Get the Rigidbody2D component attached to this enemy
         rb = GetComponent<Rigidbody2D>();
+
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        }
     }
 
     // FixedUpdate is used for physics calculations
-    void FixedUpdate()
+    protected void FixedUpdate()
     {
         // Use Physics2D.OverlapCircle to check the sensor points
         isTouchingWall = Physics2D.OverlapCircle(wallCheck.position, checkRadius, whatIsGround);
@@ -44,7 +52,7 @@ public class EnemyController : MonoBehaviour
             Flip();
         }
 
-        // Set the enemy's velocity (this code is the same as before)
+        // Set the enemy's velocity
         if (isFacingRight)
         {
             rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
@@ -67,7 +75,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void Flip()
+    protected void Flip()
     {
         // Switch the direction the enemy is facing
         isFacingRight = !isFacingRight;
@@ -97,7 +105,7 @@ public class EnemyController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void Attack()
+    public void Attack()
     {
         // Reset the attack timer
         timeSinceLastAttack = 0f;
