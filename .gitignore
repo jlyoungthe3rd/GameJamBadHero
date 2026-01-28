@@ -43,6 +43,8 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+# Unity 6+ generated solution file
+*.slnx
 *.suo
 *.tmp
 *.user
