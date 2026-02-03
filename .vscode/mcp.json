@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"coplay-mcp": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"--python",
+				">=3.11",
+				"coplay-mcp-server@latest"
+			]
+		}
+	},
+	"inputs": []
+}
